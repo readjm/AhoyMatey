@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 372cb564d368418478c9420e23f02c9e
+timeCreated: 1491751736
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: pirates pw
+  fontNames:
+  - pirates pw
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

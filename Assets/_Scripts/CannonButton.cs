@@ -1,28 +1,50 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class CannonButton : MonoBehaviour {
 
-	public void FirePort()
-    {
-        
+    public Slider cannonTimerBar;
 
-        foreach (Player player in GameObject.FindObjectsOfType<Player>())
+    float cannonTimer = 0f;
+
+    void Update()
+    {
+        if (cannonTimer > 0f)
         {
-            if (player.isLocalPlayer)
+            cannonTimer -= Time.deltaTime;
+            cannonTimerBar.value = 1 - (cannonTimer / 3f);
+        }
+
+        cannonTimer = Mathf.Clamp(cannonTimer, 0f, 3f);
+    }
+
+    public void FirePort()
+    {
+        if (cannonTimer == 0f)
+        {
+            foreach (Player player in GameObject.FindObjectsOfType<Player>())
             {
-                player.CmdFirePort();
+                if (player.isLocalPlayer)
+                {
+                    player.CmdFirePort();
+                    cannonTimer = 3f;
+                }
             }
         }
     }
 
     public void FireStbd()
     {
-        foreach (Player player in GameObject.FindObjectsOfType<Player>())
+        if (cannonTimer == 0)
         {
-            if (player.isLocalPlayer)
+            foreach (Player player in GameObject.FindObjectsOfType<Player>())
             {
-                player.CmdFireStarboard();
+                if (player.isLocalPlayer)
+                {
+                    player.CmdFireStarboard();
+                    cannonTimer = 3f;
+                }
             }
         }
     }

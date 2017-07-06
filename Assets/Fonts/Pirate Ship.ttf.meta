@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 8f55c137260702147895cb7b4a9ffa74
+timeCreated: 1491751837
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Pirate Ship
+  fontNames:
+  - Pirate Ship
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

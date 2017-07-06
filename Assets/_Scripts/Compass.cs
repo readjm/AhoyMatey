@@ -3,12 +3,29 @@ using System.Collections;
 
 public class Compass : MonoBehaviour {
 
-    GameObject needle;
-    float heading;
+    public GameObject needle;
+
+    private GameObject desiredHeading;
+    private Player localPlayer;
+    private float heading;
 
     void Start()
     {
         needle = GameObject.Find("Needle");
+        desiredHeading = GameObject.Find("Desired Heading");
+
+        foreach (Player player in GameObject.FindObjectsOfType<Player>())
+        {
+            if (player.isLocalPlayer)
+            {
+                localPlayer = player;
+            }
+        }
+    }
+
+    void Update()
+    {
+        needle.transform.rotation = Quaternion.Euler(0, 0, -localPlayer.transform.eulerAngles.y);
     }
 
     public void SetCompass()
@@ -23,9 +40,7 @@ public class Compass : MonoBehaviour {
             heading += 360;
         }
 
-        needle.transform.rotation = Quaternion.Euler(0f,0f,-heading);
-
-        
+        desiredHeading.transform.rotation = Quaternion.Euler(0f,0f,-heading);        
     }
 
     public float GetHeading()

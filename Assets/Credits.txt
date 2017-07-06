@@ -1,0 +1,106 @@
+Music:
+
+Game Music, "What Shall We Do With The Drunken Sailor"
+-courtesy of Rhodri McDonagh via youtube.com
+-licensed under CC BY 3.0
+
+Menu Music, "The Rocky Road to Dublin - Instrumental"
+-courtesy of Rhodri McDonagh via youtube.com
+-licensed under CC BY 3.0
+
+
+
+Sounds:
+
+20131109Cannon.WAV
+-courtesy of daveincamas via freesound.org
+-licensed under CC BY-NC 3.0
+
+W_Cannon_Single1.wav
+-courtesy of richardemoore via freesound.org
+-licensed under CC BY 3.0
+
+canon.aif
+-courtesy of man via freesound.org
+-licensed under CC BY 3.0
+
+canon2.aif
+-courtesy of man via freesound.org
+-licensed under CC BY 3.0
+
+Splash, Jumping, D.wav
+-courtesy of InspectorJ via freesound.org
+-licensed under CC BY 3.0
+
+Wilhelm Splash
+-courtesy of TiredHippo via freesound.org
+-licensed under CC0 1.0
+
+Moored sailboat interior in strong breeze
+-courtesy of AugustSandberg via freesound.org
+-licensed under CC BY 3.0
+
+on a wooden ship at sea.wav
+-courtesy of LXX.70 via freesound.org
+-licensed under CC BY 3.0
+
+waves_onrocks_02.flac
+- courtesy of cajo via freesound.org
+-licensed under CC BY-NC 3.0
+
+Destruction, Wooden, A.wav
+- courtesy of InspectorJ via freesound.org
+-licensed under CC BY 3.0
+
+THE CRASH.wav
+- courtesy of sandyrb via freesound.org
+-licensed under CC BY 3.0
+
+Wooden Ship Break
+- courtesy of sandyrb via freesound.org
+-licensed under CC BY 3.0
+
+wooden door smash open.wav
+- courtesy of sandyrb via freesound.org
+-licensed under CC BY 3.0
+
+
+
+Textures, Images and Models:
+
+Pirates Defense Cannon
+-courtesy of City Building Game Art via opengameart.org
+-licensed under CC0 1.0
+
+Free Pirates Game Assets by Unlucky Studio
+-courtesy of sujit1717 via opengameart.org
+-licensed under cc0 1.0
+
+Compass
+-courtesy of JotaFaD via opengameart.org
+-licensed under cc0 1.0
+
+Windrose with fleur de lis
+-courtesy of prushik via opengameart.org
+-licensed under cc0 1.0
+
+Old Time 3 islands Map
+-courtesy of Gaming4JC via opengameart.org
+-licensed under cc0 1.0
+
+RPG Icons
+-courtesy of DitzyDM and and Traipse OpenRPG via opengameart.org
+-licensed under CC BY-SA 3.0
+
+
+
+Title Fonts:
+
+"Super Mario 256"
+-courtesy of fsuarez913 via dafont.com
+
+"Bowlorama"
+-courtesy of Font Diner (FontDiner.com) via dafont.com
+
+"Cinerama"
+-courtesy of Florian Mihr via dafont.com

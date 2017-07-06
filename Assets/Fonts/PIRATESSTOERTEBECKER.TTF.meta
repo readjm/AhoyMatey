@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 91be84eed2ffbce4181971ca08e5cffe
+timeCreated: 1491751888
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: PiratesStoertebecker
+  fontNames:
+  - PiratesStoertebecker
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

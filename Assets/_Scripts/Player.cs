@@ -5,12 +5,16 @@ using UnityEngine.Networking;
 
 public class Player : NetworkBehaviour
 {
-    public ParticleSystem OnFire;
+    const float maxHealth = 100f;
+    const float turnRate = 10f;
+    const float baseSpeed = 10f;
 
-    private static float maxHealth = 100f;
+    public ParticleSystem OnFire;
+    public AudioSource wakeSound;
 
     [SyncVar(hook = "OnChangeHealth")]
-    private float health = maxHealth;
+    private float currentHealth = maxHealth;
+    [SyncVar]
     private float sailModifier = 0f;
 
     private Compass compass;
@@ -19,8 +23,7 @@ public class Player : NetworkBehaviour
     private SkinnedMeshRenderer sailRenderer;
     private Vector3 spawnPoint;
 
-    private float turnRate = 10f;
-    private float baseSpeed = 0.75f;
+
     [SyncVar]
     private float currentSpeed;
     private float windAngleModifier;
@@ -36,12 +39,22 @@ public class Player : NetworkBehaviour
     [SyncVar]
     private bool onFire = false;
 
+    [SyncVar]
+    private bool portCannonsReady = true;
+    [SyncVar]
+    private bool stbdCannonsReady = true;
+    //private float portTimer = 0f;
+    //private float stbdTimer = 0f;
 
-    void Start ()
+    //[SyncVar(hook = "UpdateFlag")]
+    //private int playerFlag;
+
+
+    void Start()
     {
 
         compass = GameObject.Find("Compass").GetComponent<Compass>();
-        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        gameManager = GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>();
         animator = GetComponent<NetworkAnimator>();
 
         foreach (SkinnedMeshRenderer renderer in GetComponentsInChildren<SkinnedMeshRenderer>())
@@ -65,18 +78,52 @@ public class Player : NetworkBehaviour
                 starboardCannons = cannonManager;
             }
         }
-	}
-	
 
-	void Update ()
+        //if (isLocalPlayer)
+        //{
+        //    playerFlag = PlayerPrefs.GetInt("player_flag");
+        //    CmdSetFlag(playerFlag);
+
+        //    foreach (Player player in GameObject.FindObjectsOfType<Player>())
+        //    {
+        //        if (!player.isLocalPlayer)
+        //        player.RpcUpdateFlag();
+        //    }
+            //CmdUpdateFlag(PlayerPrefs.GetInt("player_flag"));
+        //}
+    }
+
+
+    void Update()
     {
+        //Make flag blow with wind direction
+        float radians = gameManager.windDirection * Mathf.Deg2Rad;
+        Vector3 degreeVector = new Vector3(-Mathf.Sin(radians), 0, -Mathf.Cos(radians));
+        gameObject.GetComponentInChildren<Cloth>().externalAcceleration = degreeVector * gameManager.windSpeed * 10;
+
         if (!isLocalPlayer)
         {
             return;
         }
+
         CalcSpeedAndTurnRate();
         TurnToHeading();
-        transform.position += transform.forward*currentSpeed*Time.deltaTime;
+
+        //Move ship
+        //transform.position += (transform.forward * currentSpeed * Time.deltaTime);  //Kinematic Movement
+        //GetComponent<Rigidbody>().velocity = (transform.forward * currentSpeed * 25); //Kinematic Movement
+        GetComponent<Rigidbody>().AddForce(transform.forward * currentSpeed * 25);  //Non-kinematic movement; untestd
+        //Debug.Log("Velocity: " + GetComponent<Rigidbody>().velocity);
+
+        
+      
+
+        //Debug.Log("windSpeed: " + gameManager.windSpeed);
+        //Debug.Log("windDirection: " + gameManager.windDirection);
+        //Debug.Log("radians: " + radians);
+        //Debug.Log("Degree vector: " + degreeVector);
+        //Debug.Log("Final acceleration: " + degreeVector * gameManager.windSpeed);
+        //Debug.Log("Flag index: " + playerFlag);
     }
 
 
@@ -88,7 +135,7 @@ public class Player : NetworkBehaviour
         }
         else if (sailModifier > 0)
         {
-            sailModifier = sailModifier * .25f * Time.deltaTime; 
+            sailModifier = sailModifier * .25f * Time.deltaTime;
         }
 
         if ((transform.eulerAngles.y - gameManager.windDirection >= 0) && (transform.eulerAngles.y - gameManager.windDirection <= 180))
@@ -108,12 +155,14 @@ public class Player : NetworkBehaviour
             windRelativeHeading = 360 - (transform.eulerAngles.y - gameManager.windDirection);
         }
 
-        windAngleModifier = windRelativeHeading/180;
+        windAngleModifier = windRelativeHeading / 180;
 
         currentSpeed = baseSpeed * gameManager.windSpeed * sailModifier * windAngleModifier;
+
+        wakeSound.volume = sailModifier;
     }
 
-    
+
     private void TurnToHeading()
     {
         if ((transform.eulerAngles.y < compass.GetHeading() - 0.5f) || (transform.eulerAngles.y > compass.GetHeading() + 0.5f))
@@ -148,8 +197,6 @@ public class Player : NetworkBehaviour
                 GetComponent<Animator>().ResetTrigger("Sink");
 
             sunk = true;
-
-            Invoke("Respawn", 10);
         }
         else if (currentHealth < 25f && !broken)
         {
@@ -172,43 +219,118 @@ public class Player : NetworkBehaviour
         }
     }
 
-    //[ClientRpc]
-    private void Respawn()
-    {
-        Debug.Log("Respawn started");
-        OnFire.Stop();
-                
-        if (isLocalPlayer)
-        {
-            Debug.Log("LocalPlayer Respawn Started");
-            //broken = false;
-            //sunk = false;
-            //onFire = false;
-            //health = maxHealth;
-            animator.SetTrigger("Respawn");
-            transform.position = spawnPoint;
 
-
-            if (NetworkServer.active)
-                GetComponent<Animator>().ResetTrigger("Respawn");
-
-            Debug.Log("LocalPlayer Respawned");
-        }
-        Debug.Log("Respawned");
-    }
-
-    private void ResetAttributes()
+    private void OnCollisionEnter(Collision collision)
     {
         if (!isServer)
         {
             return;
         }
 
+        if (collision.gameObject.name == "Ship2(Clone)")
+        {
+            Vector3 relativeVelocity;
+
+            Debug.Log("Provided Collision relative velocity: " + collision.relativeVelocity);
+            relativeVelocity = GetComponent<Rigidbody>().velocity - collision.rigidbody.velocity;
+            Debug.Log("Calculated Collision relative velocity: " + relativeVelocity);
+
+            Debug.Log("Provided Collision Magnitude: " + collision.relativeVelocity.magnitude);
+            Debug.Log("Calculated collision magnitude:" + relativeVelocity.magnitude);
+            TakeDamage(relativeVelocity.magnitude * 10);
+        }
+
+        if (collision.collider.name == "Islands")
+        {
+            Debug.Log("Break");
+            animator.SetTrigger("Break");
+            if (NetworkServer.active)
+                GetComponent<Animator>().ResetTrigger("Break");
+
+            if (OnFire.isStopped || OnFire.isPaused)
+            {
+                OnFire.Play();
+            }
+            broken = true;
+            Invoke("Respawn", 10);
+        }
+    }
+
+
+    private void Respawn()
+    {
+        if (!isServer)
+        {
+            return;
+        }
+        Debug.Log("Delayed Respawn");
+
+        //sailModifier = 0f;
         broken = false;
         sunk = false;
         onFire = false;
-        health = maxHealth;
+        currentHealth = maxHealth;
+
+        RpcRespawn();
+
     }
+
+
+    [ClientRpc]
+    void RpcRespawn()
+    {
+        Debug.Log("Respawn started");
+        OnFire.Stop();
+
+        if (isLocalPlayer)
+        {
+
+            animator.SetTrigger("Respawn");
+            if (NetworkServer.active)
+                GetComponent<Animator>().ResetTrigger("Respawn");
+            Debug.Log("Animator reset.");
+
+            transform.position = spawnPoint;
+            Debug.Log("LocalPlayer Respawned");
+
+        }
+        Debug.Log("Respawn health: " + currentHealth.ToString());
+        Debug.Log("Respawned");
+    }
+
+
+    //private void DelayedReset()
+    //{
+    //    animator.SetTrigger("Respawn");
+
+    //    transform.position = spawnPoint;
+
+    //    sailModifier = 0f;
+    //    broken = false;
+    //    sunk = false;
+    //    onFire = false;
+    //    currentHealth = maxHealth;
+
+    //    if (NetworkServer.active)
+    //        GetComponent<Animator>().ResetTrigger("Respawn");
+    //    Debug.Log("Animator reset.");
+
+    //    transform.position = spawnPoint;
+    //}
+
+    //private void ResetAttributes()
+    //{
+    //    if (!isServer)
+    //    {
+    //        return;
+    //    }
+
+    //    broken = false;
+    //    sunk = false;
+    //    onFire = false;
+    //    currentHealth = maxHealth;
+    //}
+
 
     [ClientRpc]
     private void RpcFireEffects(bool firePort)
@@ -219,6 +341,7 @@ public class Player : NetworkBehaviour
             {
                 cannon.smoke.Play();
                 cannon.explosion.Play();
+                AudioSource.PlayClipAtPoint(cannon.sound, cannon.transform.position);
             }
         }
         else
@@ -227,10 +350,36 @@ public class Player : NetworkBehaviour
             {
                 cannon.smoke.Play();
                 cannon.explosion.Play();
+                AudioSource.PlayClipAtPoint(cannon.sound, cannon.transform.position);
             }
         }
 
     }
+
+
+    private void ResetPortCannons()
+    {
+        portCannonsReady = true;
+    }
+
+
+    private void ResetStbdCannons()
+    {
+        stbdCannonsReady = true;
+    }
+
+
+    //[Command]
+    //private void CmdSetFlag(int flag)
+    //{
+    //    playerFlag = flag;
+    //    GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>().CmdUpdateFlags();
+    //}
+
+    //private void UpdateFlag(int playerFlag)
+    //{
+    //    GetComponentInChildren<Flag>().SetFlag(GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>().flags[playerFlag]);
+    //}
 
 
     //==============================================================================================================================
@@ -242,6 +391,8 @@ public class Player : NetworkBehaviour
     {
         GetComponentInChildren<Camera>().enabled = true;
         GetComponentInChildren<AudioListener>().enabled = true;
+        //playerFlag = PlayerPrefs.GetInt("player_flag");
+        //CmdSetFlag(PlayerPrefs.GetInt("player_flag"));
     }
 
 
@@ -286,32 +437,46 @@ public class Player : NetworkBehaviour
     [Command]
     public void CmdFirePort()
     {
-        Vector3 direction = (transform.right * -1) + (Vector3.up * .1f);
-
-        foreach (Cannon cannon in portCannons.cannons)
+        if (portCannonsReady == true)
         {
-            GameObject shot = Instantiate(cannon.cannonBall, cannon.transform.position, cannon.transform.rotation) as GameObject;
-            shot.GetComponent<CannonBall>().shootingPlayer = GetComponent<Player>();
-            shot.GetComponent<Rigidbody>().velocity = direction * cannon.shotSpeed;
-            NetworkServer.Spawn(shot);
+            Vector3 direction = (transform.right * -1) + (Vector3.up * .1f);
+
+            foreach (Cannon cannon in portCannons.cannons)
+            {
+                GameObject shot = Instantiate(cannon.cannonBall, cannon.transform.position, cannon.transform.rotation) as GameObject;
+                shot.GetComponent<CannonBall>().shootingPlayer = GetComponent<Player>();
+                shot.GetComponent<Rigidbody>().velocity = direction * cannon.shotSpeed;
+                NetworkServer.Spawn(shot);
+            }
+            RpcFireEffects(true);
+
+            portCannonsReady = false;
+
+            Invoke("ResetPortCannons", 3);
         }
-        RpcFireEffects(true);
     }
 
 
     [Command]
     public void CmdFireStarboard()
     {
-        Vector3 direction = (transform.right + (Vector3.up * .1f));
-
-        foreach (Cannon cannon in starboardCannons.cannons)
+        if (stbdCannonsReady == true)
         {
-            GameObject shot = Instantiate(cannon.cannonBall, cannon.transform.position, cannon.transform.rotation) as GameObject;
-            shot.GetComponent<CannonBall>().shootingPlayer = GetComponent<Player>();
-            shot.GetComponent<Rigidbody>().velocity = direction * cannon.shotSpeed;
-            NetworkServer.Spawn(shot);
+            Vector3 direction = (transform.right + (Vector3.up * .1f));
+
+            foreach (Cannon cannon in starboardCannons.cannons)
+            {
+                GameObject shot = Instantiate(cannon.cannonBall, cannon.transform.position, cannon.transform.rotation) as GameObject;
+                shot.GetComponent<CannonBall>().shootingPlayer = GetComponent<Player>();
+                shot.GetComponent<Rigidbody>().velocity = direction * cannon.shotSpeed;
+                NetworkServer.Spawn(shot);
+            }
+            RpcFireEffects(false);
+
+            stbdCannonsReady = false;
+
+            Invoke("ResetStbdCannons", 3);
         }
-        RpcFireEffects(false);
     }
 
 
@@ -321,9 +486,29 @@ public class Player : NetworkBehaviour
         {
             return;
         }
-        if (health > 0)
+        Debug.Log("Taking Damage");
+        Debug.Log("currentHealth: " + currentHealth);
+        if (currentHealth > 0f)
         {
-            health -= damage;            
+            currentHealth -= damage;
+            Debug.Log("currentHealth: " + currentHealth);
+
+            if (currentHealth <= 0f)
+            {
+                Debug.Log("Invoke Respawn");
+                Invoke("Respawn", 10);
+
+                //currentHealth = maxHealth;
+
+                // called on the Server, but invoked on the Clients
+                //RpcRespawn();
+            }
         }
     }
+
+    //[ClientRpc]
+    //public void RpcUpdateFlag()
+    //{
+    //    GetComponentInChildren<Flag>().SetFlag(gameManager.flags[playerFlag]);
+    //}
 }

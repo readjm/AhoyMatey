@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: ed22c52869a65ce49bc0f380778d26f9
+timeCreated: 1491751888
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: PiratesBlackbeard
+  fontNames:
+  - PiratesBlackbeard
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

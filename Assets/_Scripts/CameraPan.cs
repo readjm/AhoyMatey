@@ -3,12 +3,13 @@ using System.Collections;
 
 public class CameraPan : MonoBehaviour {
 
-    private  Transform target;
+    public Transform target;
 
     // Use this for initialization
 	void Start ()
     {
-        target = GetComponentInParent<Player>().transform;
+        //target = GetComponentInParent<Player>().transform;
+        //target = GetComponentInParent<CameraFocus>().transform;
         //target = GameObject.FindObjectOfType<Player>().transform.position;
         //transform.LookAt(target.transform);
     }
