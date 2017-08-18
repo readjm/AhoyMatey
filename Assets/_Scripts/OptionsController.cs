@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 using System.Collections;
 
 public class OptionsController : MonoBehaviour {
@@ -9,10 +10,16 @@ public class OptionsController : MonoBehaviour {
     public Slider musicVolumeSlider;
     //public Slider difficultySlider;
     public LevelManager levelManager;
-	
-	private MusicPlayer musicPlayer;
-	
-	void Start ()
+
+    //assign AudioMixers
+    //public AudioMixer audioMixer;
+    //public AudioMixerGroup masterMixerGroup;
+    //public AudioMixerGroup musicMixerGroup;
+    //public AudioMixerGroup effectsMixerGroup;
+
+    private MusicPlayer musicPlayer;
+
+    void Start ()
 	{
 		musicPlayer = GameObject.FindObjectOfType<MusicPlayer>();
         masterVolumeSlider.value = PlayerPrefsManager.GetMasterVolume();
@@ -25,11 +32,12 @@ public class OptionsController : MonoBehaviour {
 	void Update ()
 	{
         AudioListener.volume = masterVolumeSlider.value;
+
         if (musicPlayer)
-		{
-			musicPlayer.SetVolume(musicVolumeSlider.value);
-		}
-	}
+        {
+            musicPlayer.SetVolume(musicVolumeSlider.value);
+        }
+    }
 	
 	public void SaveAndExit()
 	{
@@ -39,18 +47,18 @@ public class OptionsController : MonoBehaviour {
         AudioListener.volume = masterVolumeSlider.value;
 
         if (musicPlayer)
-		{
-			musicPlayer.SetVolume(musicVolumeSlider.value);
-		}
+        {
+            musicPlayer.SetVolume(musicVolumeSlider.value);
+        }
 
         //PlayerPrefsManager.SetDifficulty(difficultySlider.value);
         //levelManager.LoadLevel("Menu");
-	}
+    }
 	
     public void SetPlayerFlag()
     {
         PlayerPrefsManager.SetPLayerFlag(flagDropdown.value);
-        GameObject.Find("Flag").GetComponent<FlagController>().SetFlag(flagDropdown.value);
+        GameObject.Find("Flag").GetComponent<FlagController>().UpdateFlag();
     }
 
 	public void SetDefaults()

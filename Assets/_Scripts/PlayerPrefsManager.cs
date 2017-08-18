@@ -56,6 +56,10 @@ public class PlayerPrefsManager : MonoBehaviour {
     {
         return PlayerPrefs.GetFloat(MUSIC_VOLUME_KEY);
     }
+    public static int GetPlayerFlag()
+    {
+        return PlayerPrefs.GetInt(PLAYER_FLAG_KEY);
+    }
 
     public static void UnlockLevel(int level)
 	{

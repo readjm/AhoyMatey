@@ -10,7 +10,7 @@ public class Cannon : NetworkBehaviour
     public float shotSpeed = 50f;
     public ParticleSystem smoke;
     public ParticleSystem explosion;
-    public AudioClip sound;
+    public AudioSource sound;
 
 
     void Start()

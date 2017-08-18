@@ -2,6 +2,8 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 
+[RequireComponent(typeof(AudioSource))]
+
 public class MusicPlayer : MonoBehaviour
 {
     static MusicPlayer instance = null;
@@ -40,10 +42,10 @@ public class MusicPlayer : MonoBehaviour
 	public void PlayTrack(int track)
 	{
 		Debug.Log ("Level/track #: " + trackList[track]);
-		if (this.GetComponent<AudioSource>().clip != trackList[track])
+		if (audioSource.clip != trackList[track])
 		{
-			this.GetComponent<AudioSource>().clip = trackList[track];
-			this.GetComponent<AudioSource>().Play();
+			audioSource.clip = trackList[track];
+			audioSource.Play();
 		}
 	}
 	

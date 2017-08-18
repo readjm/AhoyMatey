@@ -46,8 +46,8 @@ public class Player : NetworkBehaviour
     //private float portTimer = 0f;
     //private float stbdTimer = 0f;
 
-    //[SyncVar(hook = "UpdateFlag")]
-    //private int playerFlag;
+    [SyncVar(hook = "UpdateFlag")]
+    private int playerFlag;
 
 
     void Start()
@@ -79,18 +79,18 @@ public class Player : NetworkBehaviour
             }
         }
 
-        //if (isLocalPlayer)
-        //{
-        //    playerFlag = PlayerPrefs.GetInt("player_flag");
-        //    CmdSetFlag(playerFlag);
+        if (isLocalPlayer)
+        {
+            playerFlag = PlayerPrefsManager.GetPlayerFlag(); //PlayerPrefs.GetInt("player_flag");
+            CmdSetFlag(playerFlag);
 
-        //    foreach (Player player in GameObject.FindObjectsOfType<Player>())
-        //    {
-        //        if (!player.isLocalPlayer)
-        //        player.RpcUpdateFlag();
-        //    }
+            foreach (Player player in GameObject.FindObjectsOfType<Player>())
+            {
+                if (!player.isLocalPlayer)
+                player.RpcUpdateFlag();
+            }
             //CmdUpdateFlag(PlayerPrefs.GetInt("player_flag"));
-        //}
+        }
     }
 
 
@@ -341,7 +341,8 @@ public class Player : NetworkBehaviour
             {
                 cannon.smoke.Play();
                 cannon.explosion.Play();
-                AudioSource.PlayClipAtPoint(cannon.sound, cannon.transform.position);
+                cannon.sound.Play();
+                //AudioSource.PlayClipAtPoint(cannon.sound, cannon.transform.position);
             }
         }
         else
@@ -350,7 +351,8 @@ public class Player : NetworkBehaviour
             {
                 cannon.smoke.Play();
                 cannon.explosion.Play();
-                AudioSource.PlayClipAtPoint(cannon.sound, cannon.transform.position);
+                cannon.sound.Play();
+                //AudioSource.PlayClipAtPoint(cannon.sound, cannon.transform.position);
             }
         }
 
@@ -369,17 +371,17 @@ public class Player : NetworkBehaviour
     }
 
 
-    //[Command]
-    //private void CmdSetFlag(int flag)
-    //{
-    //    playerFlag = flag;
-    //    GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>().CmdUpdateFlags();
-    //}
+    [Command]
+    private void CmdSetFlag(int flag)
+    {
+        playerFlag = flag;
+        GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>().CmdUpdateFlags();
+    }
 
-    //private void UpdateFlag(int playerFlag)
-    //{
-    //    GetComponentInChildren<Flag>().SetFlag(GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>().flags[playerFlag]);
-    //}
+    private void UpdateFlag(int playerFlag)
+    {
+        GetComponentInChildren<Flag>().SetFlag(GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>().flags[playerFlag]);
+    }
 
 
     //==============================================================================================================================
@@ -391,8 +393,8 @@ public class Player : NetworkBehaviour
     {
         GetComponentInChildren<Camera>().enabled = true;
         GetComponentInChildren<AudioListener>().enabled = true;
-        //playerFlag = PlayerPrefs.GetInt("player_flag");
-        //CmdSetFlag(PlayerPrefs.GetInt("player_flag"));
+        playerFlag = PlayerPrefsManager.GetPlayerFlag(); //PlayerPrefs.GetInt("player_flag");
+        CmdSetFlag(PlayerPrefs.GetInt("player_flag"));
     }
 
 
@@ -506,9 +508,9 @@ public class Player : NetworkBehaviour
         }
     }
 
-    //[ClientRpc]
-    //public void RpcUpdateFlag()
-    //{
-    //    GetComponentInChildren<Flag>().SetFlag(gameManager.flags[playerFlag]);
-    //}
+    [ClientRpc]
+    public void RpcUpdateFlag()
+    {
+        GetComponentInChildren<Flag>().SetFlag(gameManager.flags[playerFlag]);
+    }
 }

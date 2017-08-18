@@ -47,10 +47,15 @@ public class LevelManager : MonoBehaviour
 			LoadNextLevel();
 		}
 		
-		if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Escape))
-		{
+		if (Input.GetKeyDown(KeyCode.P))   // Pause on escape removed: 'if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Escape))'
+        {
 			Pause();
 		}
+
+        if (Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name == "Game")
+        {
+            OptionsOverlay();
+        }
 	}
 
 	public void CatStarDestroyed()
